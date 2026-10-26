@@ -9,7 +9,9 @@
 # deleted here, but GitHub may remove a package whose last version is gone: check it is still public afterwards.
 #
 # Credentials: GITHUB_TOKEN, a classic token with read:packages and delete:packages (the API cannot use anything
-# weaker). A public package version with more than 5,000 downloads cannot be deleted through the API.
+# weaker). When GITHUB_TOKEN is not set, the token saved by your `docker login <registry>` is used, so the token you
+# publish with just needs the delete:packages scope as well. A public package version with more than 5,000
+# downloads cannot be deleted through the API.
 # Needs python3. Overridable for tests: IMAGE_REGISTRY, IMAGE_OWNER, IMAGE_NAME, GITHUB_API_URL.
 set -euo pipefail
 
@@ -31,7 +33,13 @@ done
 
 command -v python3 >/dev/null || die "python3 is required."
 command -v docker >/dev/null || die "docker is required (to read the manifests)."
-[[ -n "${GITHUB_TOKEN:-}" ]] || die "GITHUB_TOKEN is not set. Export a classic token with read:packages and delete:packages."
+if [[ -z "${GITHUB_TOKEN:-}" ]]; then
+  GITHUB_TOKEN="$(docker_login_token "$REGISTRY")"
+  [[ -z "$GITHUB_TOKEN" ]] || info "GITHUB_TOKEN is not set: using the token saved by 'docker login $REGISTRY'"
+fi
+[[ -n "$GITHUB_TOKEN" ]] ||
+  die "No token: set GITHUB_TOKEN to a classic token with read:packages and delete:packages, or run 'docker login $REGISTRY' with such a token."
+export GITHUB_TOKEN
 if [[ "$REGISTRY" != ghcr.io && -z "${GITHUB_API_URL:-}" ]]; then
   die "teardown works on ghcr.io packages only (registry is '$REGISTRY')."
 fi

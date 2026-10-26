@@ -16,6 +16,7 @@ MOCK_PID=""
 FAILED=0
 
 cleanup() {
+  rm -f "$ROOT_DIR/.publish-test-dirty"
   if [[ -n "$MOCK_PID" ]]; then
     kill "$MOCK_PID" 2>/dev/null
     wait "$MOCK_PID" 2>/dev/null
@@ -77,9 +78,15 @@ t "'all' is refused when any tag exists" test $? -ne 0
 t "...and nothing else was pushed" not exists 1.1.0
 "$PUBLISH" 9.9.9 --yes >"$TMP/p4.log" 2>&1
 t "a version missing from the catalog is refused" test $? -ne 0
+# A file that is not committed makes the tree dirty (and a repo without commits is refused even earlier)
+DIRTY="$ROOT_DIR/.publish-test-dirty"
+touch "$DIRTY"
 ALLOW_DIRTY=0 "$PUBLISH" 1.1.0 --yes >"$TMP/p5.log" 2>&1
-t "without ALLOW_DIRTY a repo without commits is refused" test $? -ne 0
-t "...with a clear message" grep -q 'no commit yet' "$TMP/p5.log"
+RC=$?
+rm -f "$DIRTY"
+t "without ALLOW_DIRTY an uncommitted tree is refused" test $RC -ne 0
+t "...with a clear message" grep -q -E 'no commit yet|uncommitted changes' "$TMP/p5.log"
+t "...and nothing was pushed" not exists 1.1.0
 # A copy of the docker config (contexts and plugins stay) with every credential removed
 mkdir -p "$TMP/nologin"
 cp -R "${DOCKER_CONFIG:-$HOME/.docker}/." "$TMP/nologin/"
@@ -133,6 +140,22 @@ TOTAL="$(count)"
 
 env -u GITHUB_TOKEN "$TEARDOWN" 1.0.0 >"$TMP/t0.log" 2>&1
 t "without GITHUB_TOKEN teardown refuses" test $? -ne 0
+# Without GITHUB_TOKEN the token saved by `docker login` is used: a docker config with a login for the test registry
+mkdir -p "$TMP/withlogin"
+cp -R "${DOCKER_CONFIG:-$HOME/.docker}/." "$TMP/withlogin/"
+python3 -I - "$TMP/withlogin/config.json" <<'PY'
+import base64, json, sys
+p = sys.argv[1]
+d = json.load(open(p))
+for k in ("credsStore", "credHelpers"):
+    d.pop(k, None)
+d["auths"] = {"localhost:5055": {"auth": base64.b64encode(b"testowner:secret-token").decode()}}
+json.dump(d, open(p, "w"))
+PY
+env -u GITHUB_TOKEN DOCKER_CONFIG="$TMP/withlogin" "$TEARDOWN" all >"$TMP/t00.log" 2>&1
+t "without GITHUB_TOKEN the docker login token is used" test "$(grep -c '^  [0-9]' "$TMP/t00.log")" = "$TOTAL"
+env -u GITHUB_TOKEN DOCKER_CONFIG="$TMP/nologin" "$TEARDOWN" all >"$TMP/t01.log" 2>&1
+t "no GITHUB_TOKEN and no docker login: refused with a clear message" grep -q 'No token' "$TMP/t01.log"
 GITHUB_TOKEN=wrong "$TEARDOWN" 1.0.0 --yes >"$TMP/t1.log" 2>&1
 t "a wrong token is refused (HTTP 401)" test $? -ne 0
 t "...nothing deleted" test "$(count)" = "$TOTAL"

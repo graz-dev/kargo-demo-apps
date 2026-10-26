@@ -82,7 +82,7 @@ logged in.
 from scratch. It lists what it would delete and does nothing without `CONFIRM=yes`. A version means its tag,
 the multi-arch index and the per-platform manifests behind it (GHCR lists each as a package version);
 `all` removes every version. The script never deletes the package itself, but GitHub may remove a package once its last version is gone: check that it is still public before the next publish. It uses the GitHub Packages REST API and
-needs `GITHUB_TOKEN`, a classic token with `read:packages` and `delete:packages`; a public version with more
+needs a classic token with `read:packages` and `delete:packages`: `GITHUB_TOKEN` if set, otherwise the token saved by your `docker login ghcr.io` (so give that token the `delete:packages` scope too); a public version with more
 than 5,000 downloads cannot be deleted through the API.
 
 Both scripts are tested without touching GHCR by `make test-publish` (a throwaway registry on

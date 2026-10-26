@@ -78,3 +78,33 @@ select_versions() {
     printf '%s\n' "$v"
   done
 }
+
+# Prints the password that `docker login <registry>` stored (a token), or nothing. It reads Docker's config.json,
+# or asks the credential helper when Docker keeps credentials in the keychain. Nothing is printed to the terminal
+# by this function other than the token itself, which callers keep in a variable.
+docker_login_token() {
+  local registry="$1"
+  command -v python3 >/dev/null || return 0
+  python3 -I - "$registry" "${DOCKER_CONFIG:-$HOME/.docker}/config.json" <<'PY'
+import base64, json, subprocess, sys
+registry, path = sys.argv[1], sys.argv[2]
+try:
+    cfg = json.load(open(path))
+except Exception:
+    sys.exit(0)
+helper = cfg.get("credHelpers", {}).get(registry) or cfg.get("credsStore")
+if helper:
+    try:
+        out = subprocess.run([f"docker-credential-{helper}", "get"], input=registry, capture_output=True, text=True, check=True).stdout
+        print(json.loads(out).get("Secret", ""))
+    except Exception:
+        pass
+    sys.exit(0)
+auth = cfg.get("auths", {}).get(registry, {}).get("auth", "")
+if auth:
+    try:
+        print(base64.b64decode(auth).decode().split(":", 1)[1])
+    except Exception:
+        pass
+PY
+}
