@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="@@THEME@@">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kargo Guestbook</title>
+  <link rel="stylesheet" href="style.css" />
+  <!-- config.js is generated at container start from the STAGE and LAMBDA_URL env vars -->
+  <script src="config.js"></script>
+</head>
+<body>
+  <div class="banner" id="release-banner">
+    <span class="version">v<span id="version">@@VERSION@@</span></span>
+    <span class="message">@@MESSAGE@@</span>
+  </div>
+
+  <header>
+    <h1>📓 Kargo Guestbook</h1>
+    <p>Served from <strong id="stage">an environment</strong></p>
+    <p id="backend" class="muted" hidden></p>
+  </header>
+
+  <main>
+    <form id="entry-form">
+      <label for="name">Name</label>
+      <input id="name" name="name" type="text" placeholder="Ada Lovelace" required />
+      <label for="message">Message</label>
+      <input id="message" name="message" type="text" placeholder="Hello from KubeCon!" required />
+      <button type="submit">Sign the guestbook</button>
+    </form>
+
+    <p id="status" class="muted"></p>
+
+    <h2>Recent entries</h2>
+    <ul id="entries"><li class="muted">Loading…</li></ul>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

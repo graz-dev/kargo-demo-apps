@@ -1,0 +1,51 @@
+# Catalog of the guestbook image versions: the single source of truth for build, test and publish.
+# Strict format (read by scripts/catalog.sh, no YAML library): one "key: value" per line, plain values.
+#   version: SemVer without a "v" prefix (immutable once published, there is never a "latest")
+#   title / notes: free text (notes become the OCI description)
+#   theme: slate | blue | green | purple | red | teal | orange (the colour of the page)
+#   message: shown in the banner; letters, digits, spaces and . , ! ? : ; ' ( ) / _ - only
+#   broken: true = the page answers HTTP 200 but is not the guestbook (fails the Lab 4 verification)
+image: kargo-workshop-guestbook
+versions:
+  - version: 0.9.0
+    title: Pre-Kargo release
+    theme: slate
+    message: What runs today, before Kargo
+    broken: false
+    notes: Deployed in every environment before the first promotion. The Warehouse ignores it (constraint >=1.0.0).
+  - version: 1.0.0
+    title: Baseline
+    theme: blue
+    message: First release shipped through Kargo
+    broken: false
+    notes: Lab 1, the first promotion.
+  - version: 1.1.0
+    title: First new release
+    theme: green
+    message: A new release flows through the pipeline
+    broken: false
+    notes: Lab 2, auto-promotion.
+  - version: 1.2.0
+    title: Second new release
+    theme: purple
+    message: One decision, three regions
+    broken: false
+    notes: Lab 3, multi-region fan-out.
+  - version: 1.3.0
+    title: Release with a regression
+    theme: red
+    message: Looks great, ships today
+    broken: true
+    notes: Lab 4. Healthy but not correct, so verification fails and the Freight is never verified.
+  - version: 1.3.1
+    title: Fix for the regression
+    theme: teal
+    message: The guestbook is back
+    broken: false
+    notes: Lab 4, the fix that lifts the auto-promotion hold.
+  - version: 1.4.0
+    title: Spare release
+    theme: orange
+    message: Spare release for live demos
+    broken: false
+    notes: Held back for live demos and later labs.

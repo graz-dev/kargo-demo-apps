@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="@@THEME@@">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Guestbook unavailable</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="config.js"></script>
+</head>
+<body>
+  <div class="banner" id="release-banner">
+    <span class="version">v<span id="version">@@VERSION@@</span></span>
+    <span class="message">@@MESSAGE@@</span>
+  </div>
+
+  <header>
+    <h1>💥 Something went wrong</h1>
+    <p>Served from <strong id="stage">an environment</strong></p>
+  </header>
+
+  <main>
+    <p class="error-box">
+      The server is up and answers HTTP 200, so every health check is green,
+      but this release does not serve the guestbook.
+    </p>
+    <p class="muted">Healthy is not the same as correct.</p>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

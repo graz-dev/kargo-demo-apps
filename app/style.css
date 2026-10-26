@@ -1,0 +1,62 @@
+/* Self-contained: no CDN, so the page looks the same offline. */
+:root {
+  --accent: #475569;
+  --accent-soft: #e2e8f0;
+  --text: #1e293b;
+  --muted: #64748b;
+  --bg: #ffffff;
+}
+
+/* One theme per release: the visible change between versions */
+[data-theme="slate"]  { --accent: #475569; --accent-soft: #e2e8f0; }
+[data-theme="blue"]   { --accent: #2563eb; --accent-soft: #dbeafe; }
+[data-theme="green"]  { --accent: #16a34a; --accent-soft: #dcfce7; }
+[data-theme="purple"] { --accent: #7c3aed; --accent-soft: #ede9fe; }
+[data-theme="red"]    { --accent: #dc2626; --accent-soft: #fee2e2; }
+[data-theme="teal"]   { --accent: #0d9488; --accent-soft: #ccfbf1; }
+[data-theme="orange"] { --accent: #ea580c; --accent-soft: #ffedd5; }
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color: var(--text);
+  background: var(--bg);
+  line-height: 1.5;
+}
+
+.banner {
+  display: flex;
+  gap: 1rem;
+  align-items: baseline;
+  padding: 0.75rem 1.5rem;
+  background: var(--accent);
+  color: #fff;
+}
+.banner .version { font-weight: 700; font-size: 1.25rem; }
+
+header, main { max-width: 40rem; margin: 0 auto; padding: 0 1.5rem; }
+h1 { color: var(--accent); margin-bottom: 0.25rem; }
+
+.muted { color: var(--muted); font-size: 0.9rem; }
+.error { color: #b91c1c; font-size: 0.9rem; }
+.error-box {
+  padding: 1rem;
+  border-left: 4px solid var(--accent);
+  background: var(--accent-soft);
+}
+
+#entries li { margin-bottom: 0.25rem; }
+#backend { word-break: break-all; }
+
+form { display: grid; gap: 0.5rem; max-width: 32rem; }
+input { padding: 0.5rem; border: 1px solid var(--muted); border-radius: 4px; }
+button {
+  padding: 0.5rem 1rem;
+  border: 0;
+  border-radius: 4px;
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+}
