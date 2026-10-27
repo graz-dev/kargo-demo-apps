@@ -29,7 +29,7 @@ per-version folders.
 | 1.2.0 | Second new release, Lab 3 |
 | 1.3.0 | **Broken** (healthy but not correct), Lab 4 |
 | 1.3.1 | The fix, Lab 4 |
-| 1.4.0 | Spare for live demos |
+| 1.4.0 | Live release of Lab 6: published by hand in front of the attendees |
 
 `releases.yaml` is the source of truth (`image`, then per version: `version`, `title`, `theme`, `message`,
 `broken`, `notes`). Its format is strict and checked by `make validate`.
@@ -62,8 +62,13 @@ Credentials are your own `docker login ghcr.io -u <github-user>` (password: a cl
 ```
 make publish VERSION=1.0.0             # dry run: checks everything and builds for both platforms, pushes nothing
 make publish VERSION=1.0.0 CONFIRM=yes   # pushes
-make publish VERSION=all   CONFIRM=yes   # pushes the whole catalog
+make publish VERSION=all   CONFIRM=yes   # pushes the whole catalog, except the live versions
 ```
+
+A version marked `live: true` in `releases.yaml` (1.4.0) is not part of `all`. It is published by hand during
+Lab 6, while the attendees watch their Warehouses find it: `make publish VERSION=1.4.0 CONFIRM=yes`. Between two
+cohorts, or after a rehearsal, remove it with `make teardown VERSION=1.4.0 CONFIRM=yes` so that the next group
+finds the registry as it was. Do a dry run of both before the session.
 
 Guards, in order: valid catalog · clean working tree with a commit (the `revision` label must point at a
 real commit) · logged in to ghcr.io · **none of the tags exists** (tags are immutable: an existing tag is

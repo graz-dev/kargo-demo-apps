@@ -5,6 +5,7 @@
 #   theme: slate | blue | green | purple | red | teal | orange (the colour of the page)
 #   message: shown in the banner; letters, digits, spaces and . , ! ? : ; ' ( ) / _ - only
 #   broken: true = the page answers HTTP 200 but is not the guestbook (fails the Lab 4 verification)
+#   live: optional, true = published by hand during the workshop (Lab 6); publish all leaves it out
 image: kargo-workshop-guestbook
 versions:
   - version: 0.9.0
@@ -44,8 +45,9 @@ versions:
     broken: false
     notes: Lab 4, the fix that lifts the auto-promotion hold.
   - version: 1.4.0
-    title: Spare release
+    title: Live release
     theme: orange
-    message: Spare release for live demos
+    message: Shipped live, found by Kargo
     broken: false
-    notes: Held back for live demos and later labs.
+    live: true
+    notes: Lab 6. Published by hand in front of the attendees, so it is left out of publish all.

@@ -42,6 +42,14 @@ while IFS= read -r v; do
   VERSIONS+=("$v")
 done < <(select_versions "${ARGS[@]+"${ARGS[@]}"}")
 ((${#VERSIONS[@]} > 0)) || exit 1 # select_versions already said why
+# "all" leaves out the live versions: they are published by hand, in front of the attendees (name one to publish it)
+if [[ "${ARGS[0]:-}" == all ]]; then
+  KEEP=()
+  for v in "${VERSIONS[@]}"; do
+    if [[ "$("$CATALOG" live "$v")" == true ]]; then info "$v is a live version: left out of 'all' (publish it by name when the time comes)"; else KEEP+=("$v"); fi
+  done
+  VERSIONS=(${KEEP[@]+"${KEEP[@]}"})
+fi
 
 REPO="$(image_repo)"
 info "target: $REPO  (${#VERSIONS[@]} version(s): ${VERSIONS[*]})"
